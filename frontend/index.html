@@ -1,36 +1,44 @@
 <!DOCTYPE html>
 <html lang="id">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="Sistem InformasiPeminjaman Peralatan Laboratorium">
-    <title>CAMPUSGEAR | HOME</title>
-    <link rel="stylesheet" href="/src/styles.css">
-    <link rel="icon" href="/public/favicon.svg" type="image/x-icon">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="CAMPUSGEAR — Sistem Katalog dan Peminjaman Peralatan Mahasiswa">
+  <title>CAMPUSGEAR | Beranda</title>
+  <link rel="stylesheet" href="/src/styles.css">
 </head>
-
 <body>
-    <header class="site-header">
-        <a class="brand" href="/">CAMPUSGEAR</a>
 
-        <nav aria-label="Navigasi Utama">
-            <a href="/">HOME</a>
-            <a href="/peralatan.html">KATALOG</a>
-            <a href="/peminjaman.html">AJUKAN PEMINJAMAN</a>
-        </nav>
-    </header>
+  <header class="site-header">
+    <div class="container">
+      <a class="brand" href="/">CAMPUSGEAR</a>
+      <nav aria-label="Navigasi Utama">
+        <a href="/" class="aktif">Beranda</a>
+        <a href="/katalog.html">Katalog</a>
+        <a href="/peminjaman.html">Peminjaman</a>
+      </nav>
+    </div>
+  </header>
 
-    <main>
-        <h1>CAMPUSGEAR</h1>
-        <p>
-        Sistem Katalog dan Peminjaman Peralatan Mahasiswa
-        </p>
-    </main>
-    
-    <footer class="site-footer">
-        <p>2026 CAMPUSGEAR. Ujian Tengah Semester Mata Kuliah Komputasi Berbasis Web.</p>
-    </footer>
+  <main>
+    <div class="container">
+      <section class="hero" aria-labelledby="hero-heading">
+        <img src="/frontend/src/assets/hero.png" alt="" class="hero-img">
+        <h1 id="hero-heading">PORTAL PENGELOLAAN<br>Peralatan Mahasiswa.</h1>
+        <p>Cek katalog peralatan, ajukan peminjaman, dan lihat riwayat peminjaman, dalam satu tempat.</p>
+        <div class="btn-group">
+          <a href="/katalog.html" class="btn btn-primer">Lihat Katalog</a>
+          <a href="/peminjaman.html" class="btn btn-sekunder">Ajukan Peminjaman</a>
+        </div>
+      </section>
+    </div>
+  </main>
 
-    <script type="module" src="/src/main.js"></script>
+  <footer class="site-footer">
+    <p>2026 CAMPUSGEAR &mdash; Ujian Tengah Semester Mata Kuliah Komputasi Berbasis Web</p>
+  </footer>
+
+  <script src="/src/main.js"></script>
+
 </body>
 </html>

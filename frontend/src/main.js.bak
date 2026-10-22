@@ -1,0 +1,330 @@
+const STORAGE_KEY_STOK = 'campusgear_stok';
+const STORAGE_KEY_TRANSAKSI = 'campusgear_transaksi';
+
+const peralatanAwal = [
+  { id: '026-01', nama: 'Proyektor', kategori: 'Presentasi', stok: 6 },
+  { id: '026-02', nama: 'Speaker Aktif', kategori: 'Audio', stok: 6 },
+  { id: '026-03', nama: 'Mikrofon', kategori: 'Audio', stok: 6 },
+  { id: '036-01', nama: 'Kabel HDMI', kategori: 'Kabel', stok: 7 },
+  { id: '036-02', nama: 'Adapter HDMI ke VGA', kategori: 'Kabel', stok: 8 },
+  { id: '036-03', nama: 'Kabel Roll 100m', kategori: 'Kabel', stok: 9 },
+  { id: '026-04', nama: 'Kamera', kategori: 'Fotografi', stok: 3 },
+  { id: '026-05', nama: 'Tripod Kamera', kategori: 'Fotografi', stok: 4 },
+];
+
+function muatStok() {
+  const tersimpan = localStorage.getItem(STORAGE_KEY_STOK);
+  if (!tersimpan) return;
+  const stokMap = JSON.parse(tersimpan);
+  peralatanAwal.forEach(p => {
+    if (stokMap[p.id] !== undefined) p.stok = stokMap[p.id];
+  });
+}
+
+function simpanStok() {
+  const stokMap = {};
+  peralatanAwal.forEach(p => { stokMap[p.id] = p.stok; });
+  localStorage.setItem(STORAGE_KEY_STOK, JSON.stringify(stokMap));
+}
+
+function tentukanStatus(stok) {
+  if (stok === 0) return { label: 'Habis', kelas: 'status-habis' };
+  if (stok <= 2)  return { label: 'Terbatas', kelas: 'status-terbatas' };
+  return { label: 'Tersedia', kelas: 'status-tersedia' };
+}
+
+function muatTransaksi() {
+  return JSON.parse(localStorage.getItem(STORAGE_KEY_TRANSAKSI) || '[]');
+}
+
+function simpanTransaksi(list) {
+  localStorage.setItem(STORAGE_KEY_TRANSAKSI, JSON.stringify(list));
+}
+
+function buatIdTransaksi() {
+  return 'TRX-' + Date.now() + '-' + Math.random().toString(36).slice(2, 6).toUpperCase();
+}
+
+function buatKartuPeralatan(p) {
+  const status = tentukanStatus(p.stok);
+  return `
+    <article class="equipment-card" data-id="${p.id}">
+      <div class="card-header">
+        <span class="card-kategori">${p.kategori}</span>
+        <span class="status-badge ${status.kelas}">${status.label}</span>
+      </div>
+      <h3 class="card-nama">${p.nama}</h3>
+      <div class="card-meta">
+        <span class="card-id">${p.id}</span>
+        <span class="card-stok">Stok: <strong>${p.stok}</strong></span>
+      </div>
+    </article>`;
+}
+
+function tampilkanKatalog(daftar) {
+  const grid = document.getElementById('katalog-grid');
+  const pesan = document.getElementById('katalog-kosong');
+  if (!grid) return;
+
+  if (daftar.length === 0) {
+    grid.innerHTML = '';
+    if (pesan) pesan.hidden = false;
+    return;
+  }
+  if (pesan) pesan.hidden = true;
+  grid.innerHTML = daftar.map(buatKartuPeralatan).join('');
+}
+
+function isiFilterKategori() {
+  const select = document.getElementById('filter-kategori');
+  if (!select) return;
+  const kategoriSet = [...new Set(peralatanAwal.map(p => p.kategori))].sort();
+  kategoriSet.forEach(k => {
+    const opt = document.createElement('option');
+    opt.value = k;
+    opt.textContent = k;
+    select.appendChild(opt);
+  });
+}
+
+function terapkanFilter() {
+  muatStok();
+  const kata = (document.getElementById('cari-nama')?.value || '').toLowerCase().trim();
+  const kat = document.getElementById('filter-kategori')?.value || '';
+  const hanyaAda = document.getElementById('filter-tersedia')?.checked || false;
+  const urutan = document.getElementById('urutan-nama')?.value || 'az';
+
+  let hasil = peralatanAwal.filter(p => {
+    const cocokNama = p.nama.toLowerCase().includes(kata);
+    const cocokKat = kat === '' || p.kategori === kat;
+    const cocokStok = !hanyaAda || p.stok > 0;
+    return cocokNama && cocokKat && cocokStok;
+  });
+
+  hasil.sort((a, b) =>
+    urutan === 'az'
+      ? a.nama.localeCompare(b.nama, 'id')
+      : b.nama.localeCompare(a.nama, 'id')
+  );
+
+  tampilkanKatalog(hasil);
+}
+
+function pasangEventKatalog() {
+  document.getElementById('cari-nama')?.addEventListener('input', terapkanFilter);
+  ['filter-kategori', 'filter-tersedia', 'urutan-nama'].forEach(id =>
+    document.getElementById(id)?.addEventListener('change', terapkanFilter)
+  );
+}
+
+function isiSelectPeralatan() {
+  const select = document.getElementById('alat');
+  if (!select) return;
+  select.innerHTML = '<option value="">--- Pilih peralatan ---</option>';
+  peralatanAwal.forEach(p => {
+    const opt = document.createElement('option');
+    opt.value = p.id;
+    if (p.stok === 0) {
+      opt.textContent = `${p.nama} — Habis`;
+      opt.disabled = true;
+    } else {
+      opt.textContent = `${p.nama} (Stok: ${p.stok})`;
+    }
+    select.appendChild(opt);
+  });
+}
+
+function tampilkanError(elId, pesan) {
+  const el = document.getElementById(elId);
+  if (!el) return;
+  el.textContent = pesan;
+  el.hidden = !pesan;
+}
+
+function bersihkanError() {
+  ['error-nim','error-nama','error-alat','error-jumlah'].forEach(id =>
+    tampilkanError(id, '')
+  );
+}
+
+function validasiFormulir(nim, nama, alatId, jml) {
+  let valid = true;
+
+  if (!/^\d{8,12}$/.test(nim)) {
+    tampilkanError('error-nim', 'NIM harus terdiri dari 8 hingga 12 digit angka.');
+    valid = false;
+  }
+  if (!nama.trim()) {
+    tampilkanError('error-nama', 'Nama mahasiswa tidak boleh kosong.');
+    valid = false;
+  }
+  if (!alatId) {
+    tampilkanError('error-alat', 'Pilih peralatan yang akan dipinjam.');
+    valid = false;
+  }
+
+  if (!Number.isInteger(jml) || jml < 1) {
+    tampilkanError('error-jumlah', 'Jumlah harus berupa bilangan bulat minimal 1.');
+    valid = false;
+  } else if (alatId) {
+    const p = peralatanAwal.find(x => x.id === alatId);
+    if (p) {
+      if (p.stok === 0) {
+        tampilkanError('error-jumlah', 'Peralatan ini sudah habis stoknya.');
+        valid = false;
+      } else if (jml > p.stok) {
+        tampilkanError('error-jumlah', `Jumlah melebihi stok tersedia (${p.stok} unit).`);
+        valid = false;
+      }
+    }
+  }
+
+  return valid;
+}
+
+function tampilkanPesan(teks, tipe) {
+  const el = document.getElementById('pesan-sukses');
+  if (!el) return;
+  el.textContent = teks;
+  el.className = `pesan pesan-${tipe}`;
+  el.hidden = false;
+  setTimeout(() => { el.hidden = true; }, 4000);
+}
+
+function prosesFormulir(e) {
+  e.preventDefault();
+  bersihkanError();
+  muatStok();
+
+  const nim    = document.getElementById('nim').value.trim();
+  const nama   = document.getElementById('nama').value.trim();
+  const alatId = document.getElementById('alat').value;
+  const jml    = parseInt(document.getElementById('jumlah').value, 10);
+
+  if (!validasiFormulir(nim, nama, alatId, jml)) return;
+
+  const p = peralatanAwal.find(x => x.id === alatId);
+
+  // Cegah stok negatif dengan validasi ulang saat submit
+  if (jml > p.stok) {
+    tampilkanError('error-jumlah', `Stok berubah. Tersisa ${p.stok} unit.`);
+    isiSelectPeralatan();
+    return;
+  }
+
+  p.stok -= jml;
+  simpanStok();
+
+  const transaksi = muatTransaksi();
+  transaksi.unshift({
+    nim,
+    nama,
+    idBarang:  p.id,
+    namaBarang: p.nama,
+    jumlah:    jml,
+    tanggal:   new Date().toISOString(),
+    status:    'aktif',
+  });
+  simpanTransaksi(transaksi);
+
+  document.getElementById('form-peminjaman').reset();
+  isiSelectPeralatan();
+  tampilkanPesan(`Peminjaman ${p.nama} sebanyak ${jml} unit berhasil dicatat.`, 'sukses');
+  tampilkanRiwayat();
+}
+
+function formatTanggal(iso) {
+  return new Date(iso).toLocaleString('id-ID', {
+    day: '2-digit', month: 'short', year: 'numeric',
+    hour: '2-digit', minute: '2-digit',
+  });
+}
+
+function batalkanTransaksi(trxId) {
+  muatStok();
+  const transaksi = muatTransaksi();
+  const idx = transaksi.findIndex(t => t.id === trxId);
+  if (idx === -1) return;
+
+  const trx = transaksi[idx];
+  if (trx.status === 'dibatalkan') return;
+
+  const p = peralatanAwal.find(x => x.id === trx.idBarang);
+  if (p) { p.stok += trx.jumlah; simpanStok(); }
+
+  transaksi[idx].status = 'dibatalkan';
+  simpanTransaksi(transaksi);
+  isiSelectPeralatan();
+  tampilkanRiwayat();
+}
+
+function buatBarisRiwayat(trx) {
+  const aktif = trx.status === 'aktif';
+  return `
+    <tr class="${aktif ? '' : 'baris-batal'}">
+      <td data-label="NIM">${trx.nim}</td>
+      <td data-label="Nama">${trx.nama}</td>
+      <td data-label="Peralatan">${trx.namaBarang}</td>
+      <td data-label="Jumlah">${trx.jumlah}</td>
+      <td data-label="Tanggal">${formatTanggal(trx.tanggal)}</td>
+      <td data-label="Status">
+        <span class="status-badge ${aktif ? 'status-tersedia' : 'status-habis'}">
+          ${aktif ? 'Aktif' : 'Dibatalkan'}
+        </span>
+      </td>
+      <td data-label="Aksi">
+        ${aktif
+          ? `<button class="btn-batal" data-id="${trx.id}" aria-label="Batalkan transaksi ${trx.id}">Batalkan</button>`
+          : '<span class="teks-batal">—</span>'}
+      </td>
+    </tr>`;
+}
+
+function tampilkanRiwayat() {
+  const tbody = document.getElementById('riwayat-tbody');
+  const pesan = document.getElementById('riwayat-kosong');
+  if (!tbody) return;
+
+  const transaksi = muatTransaksi();
+  if (transaksi.length === 0) {
+    tbody.innerHTML = '';
+    if (pesan) pesan.hidden = false;
+    return;
+  }
+  if (pesan) pesan.hidden = true;
+  tbody.innerHTML = transaksi.map(buatBarisRiwayat).join('');
+  tbody.querySelectorAll('.btn-batal').forEach(btn =>
+    btn.addEventListener('click', () => batalkanTransaksi(btn.dataset.id))
+  );
+}
+
+function tampilkanStatistikBeranda() {
+  const total     = document.getElementById('stat-total');
+  const tersedia  = document.getElementById('stat-tersedia');
+  const transaksiEl = document.getElementById('stat-transaksi');
+  if (!total) return;
+
+  muatStok();
+  total.textContent       = peralatanAwal.length;
+  tersedia.textContent    = peralatanAwal.filter(p => p.stok > 0).length;
+  transaksiEl.textContent = muatTransaksi().length;
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+  muatStok();
+
+  tampilkanStatistikBeranda();
+
+  if (document.getElementById('katalog-grid')) {
+    isiFilterKategori();
+    pasangEventKatalog();
+    terapkanFilter();
+  }
+
+  if (document.getElementById('form-peminjaman')) {
+    isiSelectPeralatan();
+    document.getElementById('form-peminjaman')
+      .addEventListener('submit', prosesFormulir);
+    tampilkanRiwayat();
+  }
+});

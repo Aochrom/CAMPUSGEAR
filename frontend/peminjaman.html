@@ -1,114 +1,157 @@
 <!DOCTYPE html>
 <html lang="id">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="Sistem InformasiPeminjaman Peralatan Laboratorium">
-    <title>CAMPUSGEAR | PEMINJAMAN</title>
-    <link rel="stylesheet" href="/src/styles.css">
-    <link rel="icon" href="/public/favicon.svg" type="image/x-icon">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Ajukan peminjaman peralatan di CAMPUSGEAR">
+  <title>CAMPUSGEAR | Peminjaman</title>
+  <link rel="stylesheet" href="/src/styles.css">
 </head>
-
 <body>
-    <header class="site-header">
-        <a class="brand" href="/">CAMPUSGEAR</a>
 
-        <nav aria-label="Navigasi Utama">
-            <a href="/">HOME</a>
-            <a href="/katalog.html">KATALOG</a>
-            <a>AJUKAN PEMINJAMAN</a>
-        </nav>
-    </header>
+  <header class="site-header">
+    <div class="container">
+      <a class="brand" href="/">CAMPUSGEAR</a>
+      <nav aria-label="Navigasi Utama">
+        <a href="/">Beranda</a>
+        <a href="/katalog.html">Katalog</a>
+        <a href="/peminjaman.html" class="aktif">Peminjaman</a>
+      </nav>
+    </div>
+  </header>
 
-    <main>
-        <h1>Ajukan Peminjaman</h1>
-        <p>
-            Isi data-data berikut
+  <main>
+    <div class="container">
+      <h1>Ajukan Peminjaman</h1>
+      <p class="subtitle">Isi formulir di bawah untuk meminjam peralatan.</p>
+
+      <div class="layout-peminjaman">
+
+        <section aria-labelledby="judul-form">
+          <div class="form-card">
+            <h2 id="judul-form">Formulir Peminjaman</h2>
+
+            <p id="pesan-sukses" class="pesan" hidden aria-live="assertive"></p>
+
+            <form id="form-peminjaman" novalidate>
+
+              <fieldset>
+                <legend>Data Peminjam</legend>
+
+                <div class="form-group">
+                  <label for="nim">NIM</label>
+                  <input
+                    type="text"
+                    id="nim"
+                    name="nim"
+                    inputmode="numeric"
+                    placeholder="Contoh: 20250036001"
+                    autocomplete="off"
+                    required
+                  >
+                  <span class="error-msg" id="error-nim" role="alert" hidden></span>
+                </div>
+
+                <div class="form-group">
+                  <label for="nama">Nama Mahasiswa</label>
+                  <input
+                    type="text"
+                    id="nama"
+                    name="nama"
+                    placeholder="Contoh: Adi Nugroho"
+                    autocomplete="name"
+                    required
+                  >
+                  <span class="error-msg" id="error-nama" role="alert" hidden></span>
+                </div>
+              </fieldset>
+
+              <fieldset>
+                <legend>Detail Peminjaman</legend>
+
+                <div class="form-group">
+                  <label for="alat">Peralatan</label>
+                  <select id="alat" name="alat" required>
+                    <option value="">--- Pilih peralatan ---</option>
+                    <!-- diisi oleh file main -->
+                  </select>
+                  <span class="error-msg" id="error-alat" role="alert" hidden></span>
+                </div>
+
+                <div class="form-group">
+                  <label for="jumlah">Jumlah Pinjam (unit)</label>
+                  <input
+                    type="number"
+                    id="jumlah"
+                    name="jumlah"
+                    min="1"
+                    step="1"
+                    placeholder="Contoh: 2"
+                    required
+                  >
+                  <span class="error-msg" id="error-jumlah" role="alert" hidden></span>
+                </div>
+              </fieldset>
+
+              <button type="submit" class="btn-submit">Ajukan Peminjaman</button>
+
+            </form>
+          </div>
+        </section>
+
+        <aside aria-labelledby="judul-info">
+          <div class="form-card">
+            <h2 id="judul-info">Ketentuan Peminjaman</h2>
+            <ul style="padding-left:18px; font-size:.875rem; line-height:1.8; color:var(--clr-text-muted);">
+              <li>NIM harus terdiri dari 8 hingga 12 digit angka.</li>
+              <li>Nama mahasiswa tidak boleh kosong.</li>
+              <li>Pilih peralatan yang akan dipinjam.</li>
+              <li>Jumlah pinjam minimal 1 unit.</li>
+              <li>Jumlah pinjam tidak boleh melebihi stok tersedia.</li>
+              <li>Peralatan dengan stok 0 tidak dapat dipinjam.</li>
+              <li>Peminjaman dapat dibatalkan selama masih berstatus Aktif.</li>
+            </ul>
+          </div>
+        </aside>
+
+      </div>
+
+      <section class="section-riwayat" aria-labelledby="judul-riwayat">
+        <h2 id="judul-riwayat">Riwayat Peminjaman</h2>
+
+        <p id="riwayat-kosong" class="riwayat-kosong" hidden aria-live="polite">
+          Belum ada transaksi yang tercatat.
         </p>
 
-        <form action="/peminjaman" method="post">
-            <fieldset>
-                <legend>Data Peminjam</legend>
-                <label for="nim">NIM: </label>
-                <input 
-                id="nim"
-                name="nim"
-                type="text"
-                inputmode="numeric"
-                pattern="[0-9]{10}"
-                maxlength="10"
-                required
-                placeholder="Contoh: 2025001..."
-                >
-                <label for="nama">Nama: </label>
-                <input
-                id="nama"
-                name="nama"
-                type="text"
-                autocomplete="name"
-                inputmode="text"
-                pattern="[A-Za-z\s]+"
-                minlength="3"
-                maxlength="100"
-                required
-                placeholder="Contoh: Adi Nugroho"
-                >
-        </fieldset>
-        <fieldset>
-                <legend>Detail Peminjaman</legend>
-                <label for="alat">Peralatan: </label>
-                <select id="alat" name="alat" required>
-                    <option value="">--- Pilih peralatan ---</option>
-                    <option value="multimeter">Multimeter Digital</option>
-                    <option value="router">Router</option>
-                    <option value="kamera">Kamera</option>
-                </select>
-                <label for="tanggal-pinjam">Tanggal Peminjaman: </label>
-                <input
-                id="tanggal-pinjam"
-                name="tanggal_pinjam"
-                type="date"
-                required
-                >
-                <label for="durasi">Durasi Peminjaman (hari): </label>
-                <p id="durasi-help" class="hint">Durasi peminjaman antara 1 hingga 7 hari.</p>
-                <input
-                id="durasi"
-                name="durasi"
-                type="number"
-                min="1"
-                max="7"
-                aria-describedby="durasi-help"
-                required
-                >
-                <label for="keperluan">Keperluan: </label>
-                <textarea
-                id="keperluan"
-                name="keperluan"
-                minlength="10"
-                maxlength="300"
-                rows="5"
-                cols="50"
-                required
-                ></textarea>
-            </fieldset>
-
-        <div class="checkbox-container">
-            <input
-            id="setuju"
-            name="setuju"
-            type="checkbox"
-            value="ya"
-            required
-            >
-            <label for="setuju">Saya menyetujui syarat dan ketentuan peminjaman.</label>
+        <div class="tabel-wrapper">
+          <table aria-label="Riwayat transaksi peminjaman">
+            <thead>
+              <tr>
+                <th scope="col">ID Transaksi</th>
+                <th scope="col">NIM</th>
+                <th scope="col">Nama</th>
+                <th scope="col">Peralatan</th>
+                <th scope="col">Jumlah</th>
+                <th scope="col">Tanggal</th>
+                <th scope="col">Status</th>
+                <th scope="col">Aksi</th>
+              </tr>
+            </thead>
+            <tbody id="riwayat-tbody" aria-live="polite">
+              <!-- diisi oleh main.js -->
+            </tbody>
+          </table>
         </div>
-        <button type="submit">Ajukan Sekarang</button>
-        </form>
-    </main>
-    <footer class="site-footer">
-        <p><a href="/peralatan.html">Kembali ke Katalog</a></p>
-    </footer>
-    <script type="module" src="/src/main.js"></script>
+      </section>
+
+    </div>
+  </main>
+
+  <footer class="site-footer">
+    <p>2026 CAMPUSGEAR &mdash; Ujian Tengah Semester Mata Kuliah Komputasi Berbasis Web</p>
+  </footer>
+
+  <script src="/src/main.js"></script>
+
 </body>
 </html>

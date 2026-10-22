@@ -1,117 +1,79 @@
 <!DOCTYPE html>
 <html lang="id">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="Sistem InformasiPeminjaman Peralatan Laboratorium">
-    <title>CAMPUSGEAR | KATALOG</title>
-    <link rel="stylesheet" href="/src/styles.css">
-    <link rel="icon" href="/public/favicon.svg" type="image/x-icon">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Katalog peralatan yang tersedia untuk dipinjam di CAMPUSGEAR">
+  <title>CAMPUSGEAR | Katalog</title>
+  <link rel="stylesheet" href="/src/styles.css">
 </head>
-
 <body>
-    <header class="site-header">
-        <a class="brand" href="/">CAMPUSGEAR</a>
 
-        <nav aria-label="Navigasi Utama">
-            <a href="/">HOME</a>
-            <a>KATALOG</a>
-            <a href="/peminjaman.html">AJUKAN PEMINJAMAN</a>
-        </nav>
-    </header>
+  <header class="site-header">
+    <div class="container">
+      <a class="brand" href="/">CAMPUSGEAR</a>
+      <nav aria-label="Navigasi Utama">
+        <a href="/">Beranda</a>
+        <a href="/katalog.html" class="aktif">Katalog</a>
+        <a href="/peminjaman.html">Peminjaman</a>
+      </nav>
+    </div>
+  </header>
 
-    <main>
-        <h1>KATALOG PERALATAN</h1>
-        <section aria-labelledby="judul-katalog">
-            <!--
-            <h2 id="judul-katalog">Peralatan yang Tersedia</h2>
-            -->
-            <article class="equipment-card">
-                <h3>Kamera</h3>
-                <figure>
-                    <img src="" alt="Kamera" width="320">
-                    <figcaption>Kamera Canon EOS R5 Mark II.</figcaption>
-                </figure>
-                <p><strong>Stok: </strong></p>
-                <p><strong>Kondisi: </strong></p>
-            </article>
+  <main>
+    <div class="container">
+      <h1>Katalog Peralatan</h1>
+      <p class="subtitle">Cari dan filter peralatan yang tersedia untuk dipinjam.</p>
 
-            <article class="equipment-card">
-                <h3>Tripod</h3>
-                <figure>
-                    <img src="" alt="Tripod" width="320">
-                    <figcaption>Tripod untuk kamera.</figcaption>
-                </figure>
-                <p><strong>Stok: </strong></p>
-                <p><strong>Kondisi: </strong></p>
-            </article>
+      <section aria-label="Pencarian dan Filter">
+        <div class="kontrol-katalog">
+          <label for="cari-nama" class="sr-only">Cari peralatan</label>
+          <input
+            type="search"
+            id="cari-nama"
+            name="cari-nama"
+            placeholder="Cari nama peralatan…"
+            autocomplete="off"
+            aria-label="Cari peralatan berdasarkan nama"
+          >
 
-            <article class="equipment-card">
-                <h3>Proyektor</h3>
-                <figure>
-                    <img src="" alt="Proyektor" width="320">
-                    <figcaption>Proyektor InFocus IN114AA.</figcaption>
-                </figure>
-                <p><strong>Stok: </strong>6 unit</p>
-                <p><strong>Kondisi: </strong>Baik</p>
-            </article>
+          <label for="filter-kategori" class="sr-only">Filter kategori</label>
+          <select id="filter-kategori" name="filter-kategori" aria-label="Filter berdasarkan kategori">
+            <option value="">Semua kategori</option>
+          </select>
 
-            <article class="equipment-card">
-                <h3>Speaker</h3>
-                <figure>
-                    <img src="" alt="Speaker" width="320">
-                    <figcaption>Speaker.</figcaption>
-                </figure>
-                <p><strong>Stok: </strong>6 unit</p>
-                <p><strong>Kondisi: </strong>Baik</p>
-            </article>
+          <label for="urutan-nama" class="sr-only">Urutan</label>
+          <select id="urutan-nama" name="urutan-nama" aria-label="Urutan nama">
+            <option value="az">Nama A–Z</option>
+            <option value="za">Nama Z–A</option>
+          </select>
 
-            <article class="equipment-card">
-                <h3>Mikrofon</h3>
-                <figure>
-                    <img src="" alt="Mikrofon" width="320">
-                    <figcaption>Mikrofon.</figcaption>
-                </figure>
-                <p><strong>Stok: </strong>6 unit</p>
-                <p><strong>Kondisi: </strong>Baik</p>
-            </article>
+          <label class="checkbox-label" for="filter-tersedia">
+            <input type="checkbox" id="filter-tersedia" name="filter-tersedia">
+            Stok tersedia saja
+          </label>
+        </div>
+      </section>
 
-            <article class="equipment-card">
-                <h3>Kabel HDMI</h3>
-                <figure>
-                    <img src="" alt="Kabel HDMI" width="320">
-                    <figcaption>Kabel HDMI.</figcaption>
-                </figure>
-                <p><strong>Stok: </strong>6 unit</p>
-                <p><strong>Kondisi: </strong>Baik</p>
-            </article>
+      <section aria-labelledby="judul-katalog">
+        <h2 id="judul-katalog" class="sr-only">Daftar Peralatan</h2>
 
-            <article class="equipment-card">
-                <h3>Adapter HDMI to VGA</h3>
-                <figure>
-                    <img src="" alt="AdapterHDMI" width="320">
-                    <figcaption>Adapter/converter HDMI ke VGA.</figcaption>
-                </figure>
-                <p><strong>Stok: </strong>6 unit</p>
-                <p><strong>Kondisi: </strong>Baik</p>
-            </article>
+        <div class="katalog-grid" id="katalog-grid" role="list" aria-live="polite">
+          <!-- nanti diisi oleh JS -->
+        </div>
 
-            <article class="equipment-card">
-                <h3>Kabel Roll</h3>
-                <figure>
-                    <img src="" alt="Kabel Roll" width="320">
-                    <figcaption>Kabel roll sepanjang 100m.</figcaption>
-                </figure>
-                <p><strong>Stok: </strong>6 unit</p>
-                <p><strong>Kondisi: </strong>Baik</p>
-            </article>
-        </section>
-    </main>
+        <p id="katalog-kosong" class="katalog-kosong" hidden aria-live="assertive">
+          Peralatan tidak ditemukan.
+        </p>
+      </section>
+    </div>
+  </main>
 
-    <footer class="site-footer">
-        <p>2026 CAMPUSGEAR. Ujian Tengah Semester Mata Kuliah Komputasi Berbasis Web.</p>
-    </footer>
-    
-    <script type="module" src="/src/main.js"></script>
+  <footer class="site-footer">
+    <p>2026 CAMPUSGEAR &mdash; Ujian Tengah Semester Mata Kuliah Komputasi Berbasis Web</p>
+  </footer>
+
+  <script src="/src/main.js"></script>
+
 </body>
 </html>
